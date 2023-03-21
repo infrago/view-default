@@ -1,6 +1,7 @@
 package view_default
 
 import (
+	"github.com/infrago/infra"
 	"github.com/infrago/view"
 )
 
@@ -9,5 +10,5 @@ func Driver() view.Driver {
 }
 
 func init() {
-	view.Register("default", Driver())
+	infra.Register("default", Driver())
 }
