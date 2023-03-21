@@ -1,2 +1,2 @@
 # view-default
-infra.go default view driver.
+infra.Go default view driver.
