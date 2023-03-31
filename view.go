@@ -19,7 +19,7 @@ import (
 type (
 	defaultDriver  struct{}
 	defaultConnect struct {
-		config view.Config
+		instance *view.Instance
 	}
 
 	defaultParser struct {
@@ -38,21 +38,9 @@ type (
 )
 
 // 连接
-func (driver *defaultDriver) Connect(config view.Config) (view.Connect, error) {
-	if config.Left == "" {
-		config.Left = "{%"
-	}
-	if config.Right == "" {
-		config.Right = "%}"
-	}
-	if config.Root == "" {
-		config.Right = "asset/views"
-	}
-	if config.Shared == "" {
-		config.Right = "shared"
-	}
+func (driver *defaultDriver) Connect(inst *view.Instance) (view.Connect, error) {
 	return &defaultConnect{
-		config: config,
+		instance: inst,
 	}, nil
 }
 
@@ -79,11 +67,10 @@ func (connect *defaultConnect) Parse(body view.Body) (string, error) {
 	} else {
 		return body, nil
 	}
-
 }
 
 func (connect *defaultConnect) newDefaultViewParser(body view.Body) *defaultParser {
-	config := connect.config
+	config := connect.instance.Config
 
 	parser := &defaultParser{
 		connect: connect, viewbody: body,
@@ -123,7 +110,7 @@ func (parser *defaultParser) Parse() (string, error) {
 }
 
 func (parser *defaultParser) Layout() (string, error) {
-	config := parser.connect.config
+	config := parser.connect.instance.Config
 	body := parser.viewbody
 
 	bodyText, bodyError := parser.Body(body.View, body.Model)
@@ -218,7 +205,7 @@ func (parser *defaultParser) Layout() (string, error) {
 
 /* 返回view */
 func (parser *defaultParser) Body(name string, args ...Any) (string, error) {
-	config := parser.connect.config
+	config := parser.connect.instance.Config
 	body := parser.viewbody
 
 	var bodyModel Any
@@ -305,7 +292,7 @@ func (parser *defaultParser) Body(name string, args ...Any) (string, error) {
 
 /* 返回view */
 func (parser *defaultParser) Render(name string, args ...Any) (string, error) {
-	config := parser.connect.config
+	config := parser.connect.instance.Config
 	body := parser.viewbody
 
 	var renderModel Any
